@@ -27,21 +27,24 @@
   <!-- Content -->
   <div class="container" id="app" v-cloak>
     <h1>Don't kill your friends!</h1>
+    <p v-if="player">
+      Hey, {{player}}!
+    </p>
+    <!-- Player Name -->
     <div v-if="!player">
       <form @submit.prevent="setPlayerName">
         <input type="text" v-model="playerName" />
         <button>Set name</button>
       </form>
     </div>
-    <p v-else>
-      Hey, {{player}}!
-    </p>
     <div v-if="player">
+      <!-- Room Name -->
       <form @submit.prevent="enterRoom" v-if="!room">
         <input type="text" v-model="roomName" />
         <button>Enter room</button>
       </form>
       <div v-if="room">
+        <!-- Room Lobby -->
         <div v-if="!room.started">
           <p>You're in <strong v-text="room.name"></strong></p>
           <div style="padding-left: 1em">
@@ -52,7 +55,8 @@
             <button v-else @click="ready">Ready</button>
           </div>
         </div>
-        <div v-else>
+        <!-- Game View -->
+        <div v-if="room.started">
           You are in a game with {{otherPeoplesNames}}!
         </div>
       </div>
@@ -93,7 +97,7 @@
           return this.people.filter(person => person.id !== this.actualPlayer.id)
         },
         otherPeoplesNames () {
-          return this.listOut(this.otherPeople.map(person => person.name))
+          return this.listOut(this.otherPeople.map(person => person.name)) || 'no one'
         }
       },
       methods: {
