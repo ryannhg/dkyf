@@ -5,7 +5,7 @@
 
 - [x] Connect to pals using web sockets.
 
-- [] Do literally anything else.
+- [ ] Do literally anything else.
 
 
 ### Local Development
