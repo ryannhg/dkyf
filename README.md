@@ -1,6 +1,10 @@
 # dont kill your friends
 > a text-based battle-royale
 
+### and dont kill them for free
+
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 ### Overview
 
 - [x] Connect to pals using web sockets.
