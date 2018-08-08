@@ -10,6 +10,6 @@
 
 ### Local Development
 
-1. __npm install__
+1. __`npm install`__
 
-1. __npm run dev__
+1. __`npm run dev`__
