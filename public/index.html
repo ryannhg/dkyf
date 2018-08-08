@@ -8,6 +8,15 @@
     html, body {
       height: 100%;
       font-family: monospace;
+      margin: 0;
+    }
+    .container {
+      max-width: 480px;
+      padding: 1rem 2rem;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0 auto;
+      overflow: auto;
     }
     [v-cloak] {
       display: none !important;
@@ -16,7 +25,7 @@
 </head>
 <body>
   <!-- Content -->
-  <div id="app" v-cloak>
+  <div class="container" id="app" v-cloak>
     <h1>Don't kill your friends!</h1>
     <div v-if="!player">
       <form @submit.prevent="setPlayerName">
@@ -33,9 +42,18 @@
         <button>Enter room</button>
       </form>
       <div v-if="room">
-        <p>Room: {{room.name}}</p>
-        <div style="padding-left: 1em">
-          <p v-for="(message, i) in room.messages" :key="i" v-html="message"></p>
+        <div v-if="!room.started">
+          <p>You're in <strong v-text="room.name"></strong></p>
+          <div style="padding-left: 1em">
+            <p v-for="(message, i) in room.messages" :key="i" v-html="message"></p>
+          </div>
+          <div v-if="canStartGame">
+            <button v-if="isReady" @click="unready">Not ready</button>
+            <button v-else @click="ready">Ready</button>
+          </div>
+        </div>
+        <div v-else>
+          You are in a game with {{otherPeoplesNames}}!
         </div>
       </div>
     </div>
@@ -50,7 +68,7 @@
       data: {
         socket: undefined,
         playerName: '',
-        roomName: '',
+        roomName: window.location.hash ? window.location.hash.substr(1) : '',
         room: undefined,
         player: undefined,
         messages: []
@@ -58,29 +76,76 @@
       mounted () {
         this.playerName = window.localStorage.getItem('playerName') || ''
       },
+      computed: {
+        canStartGame () {
+          return this.room && this.room.people.length > 1
+        },
+        isReady () {
+          return this.actualPlayer ? this.actualPlayer.ready : false
+        },
+        actualPlayer () {
+          return this.room && this.room.people.filter(person => person.id === this.socket.id)[0]
+        },
+        people () {
+          return (this.room && this.room.people) || []
+        },
+        otherPeople () {
+          return this.people.filter(person => person.id !== this.actualPlayer.id)
+        },
+        otherPeoplesNames () {
+          return this.listOut(this.otherPeople.map(person => person.name))
+        }
+      },
       methods: {
+        listOut (items) {
+          switch (items.length) {
+            case 0:
+              return ''
+            case 1:
+              return items[0]
+            case 2:
+              return `${items[0]} and ${items[1]}`
+            default:
+              return items.reduce((str, item, i) =>
+                i === items.length - 1
+                  ? str + item
+                  : i === items.length - 2
+                    ? str + item + ', and '
+                    : str + item + ', '
+              , '')
+          }
+        },
         setPlayerName () {
           if (this.playerName) {
             window.localStorage.setItem('playerName', this.playerName)
             this.player = this.playerName
 
             this.socket = io.connect()
-            this.socket.on('roomEntered', this.roomEntered)
-            this.socket.on('messageReceived', this.messageReceived)
+            this.socket.on('roomUpdated', this.roomUpdated)
           }
         },
         enterRoom () {
           if (this.roomName) {
             this.socket.emit('enterRoom', { name: this.roomName, player: this.player })
+            this.roomName = ''
           }
         },
-        roomEntered (room) {
-          this.room = room
-          this.roomName = ''
+        startGame () {
+          if (this.canStartGame) {
+            this.socket.emit('startGame')
+          }
         },
-        messageReceived (message) {
-          if (this.room) {
-            this.room.messages.push(message)
+        roomUpdated (room) {
+          this.room = room
+        },
+        ready () {
+          if (this.canStartGame) {
+            this.socket.emit('playerReady')
+          }
+        },
+        unready () {
+          if (this.canStartGame) {
+            this.socket.emit('playerUnready')
           }
         }
       }

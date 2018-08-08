@@ -5,7 +5,9 @@
 
 - [x] Connect to pals using web sockets.
 
-- [ ] Do literally anything else.
+- [x] Ready up and start a game. 
+
+- [ ] Actually play a game.
 
 
 ### Local Development
