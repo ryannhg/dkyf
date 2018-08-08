@@ -1,0 +1,27 @@
+{
+  "name": "dont-kill-your-friends",
+  "version": "1.0.0",
+  "description": "a text-based battle-royale",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryannhg/dont-kill-your-friends.git"
+  },
+  "author": "Ryan Haskell-Glatz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryannhg/dont-kill-your-friends/issues"
+  },
+  "homepage": "https://github.com/ryannhg/dont-kill-your-friends#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "socket.io": "^2.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
+  }
+}
