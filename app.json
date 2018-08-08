@@ -1,0 +1,7 @@
+{
+    "name": "dont kill your friends",
+    "description": "a text-based battle-royale",
+    "repository": "https://github.com/ryannhg/dkyf",
+    "logo": "https://i.imgur.com/vuVLVbi.png",
+    "keywords": ["node", "express", "socketio"]
+  }
