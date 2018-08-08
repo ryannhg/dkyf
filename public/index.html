@@ -46,7 +46,10 @@
       <div v-if="room">
         <!-- Room Lobby -->
         <div v-if="!room.started">
-          <p>You're in <strong v-text="room.name"></strong></p>
+          <p>You're in <strong v-text="room.name"></strong>
+            <button @click="copyRoomLink()">Copy link</button>
+            <span v-html="copyMessage"></span>
+          </p>
           <div style="padding-left: 1em">
             <p v-for="(message, i) in room.messages" :key="i" v-html="message"></p>
           </div>
@@ -70,6 +73,7 @@
     const app = new Vue({
       el: '#app',
       data: {
+        copyMessage: '',
         socket: undefined,
         playerName: '',
         roomName: window.location.hash ? window.location.hash.substr(1) : '',
@@ -118,6 +122,29 @@
                     : str + item + ', '
               , '')
           }
+        },
+        copyRoomLink () {
+          const { protocol, host } = window.location
+          if (this.room) {
+            this.copyToClipboard(`${protocol}//${host}#${this.room.name}`)
+          }
+        },
+        copyToClipboard (text) {
+          this.copyMessage = ''
+          var textArea = document.createElement("textarea")
+          textArea.value = text
+          document.body.appendChild(textArea)
+          textArea.focus()
+          textArea.select()
+
+          try {
+            var successful = document.execCommand('copy')
+            this.copyMessage = successful ? 'Link copied to clipboard!' : 'Try again?'
+          } catch (err) {
+            this.copyMessage = 'Try again?'
+          }
+
+          document.body.removeChild(textArea)
         },
         setPlayerName () {
           if (this.playerName) {
